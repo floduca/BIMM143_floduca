@@ -2,7 +2,7 @@
 title: "Pro06 R Functions"
 author: "Paul Loduca"
 date: "10/17/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
@@ -52,7 +52,6 @@ rescale2 <- function(x) {
 }
 rescale(1:100)
 rescale(c(1, 2, 3, NA, 10))
-?range()
 ```
 ```{r}
 rescale3 <- function(x) {
