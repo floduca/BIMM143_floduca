@@ -1,0 +1,23 @@
+---
+title: "Pro08 Handson"
+author: "Paul Loduca"
+date: "10/24/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+fooddat <-  read.csv("UK_foods.csv", row.names = 1)
+head(fooddat)
+fooddat
+barplot(as.matrix(fooddat, beside = T, col = rainbow(nrow(fooddat))))
+pairs(fooddat, col=rainbow(10), pch=16)
+
+pca <-  prcomp(t(fooddat))
+summary(pca)
+plot(pca$x[,1], pca$x[,2], xlab = "PC1", ylab = "PC2", xlim=c(-270,500))
+text(pca$x[,1], pca$x[,2], colnames(fooddat), col = c("yellow", "red", "blue", "green"))
+```

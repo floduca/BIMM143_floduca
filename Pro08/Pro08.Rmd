@@ -1,0 +1,55 @@
+---
+title: "Pro08"
+author: "Paul Loduca"
+date: "10/24/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Kmeans cluster
+
+```{r}
+tmp <- c(rnorm(30,-3), rnorm(30, 3))
+x <-  cbind(x=tmp, y=rev(tmp))
+plot(x)
+k <- kmeans(x, centers = 2, nstart=2000)
+```
+
+```{r}
+plot(x, col = k$cluster)
+points(k$centers, col= "blue")
+```
+##Hclust -- input distance matrix from dist function
+```{r}
+dist_matrix <- dist(x)
+hc <- hclust(dist_matrix)
+hc
+plot(hc)
+abline(h=6, col="red")
+grps <-  cutree(hc, h=6)
+```
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+ matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2), # c1
+ matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+ matrix(c(rnorm(50, mean = 1, sd = 0.3), # c3
+ rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+# Step 2. Plot the data without clustering
+plot(x)
+# Step 3. Generate colors for known clusters
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+plot(x, col=col)
+dist_mat <- dist(x)
+clust <- hclust(dist_mat)
+grps <- cutree(clust, k=3)
+grps
+plot(clust, col=grps)
+table(grps)
+```
+

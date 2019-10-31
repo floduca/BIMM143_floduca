@@ -1,0 +1,103 @@
+---
+title: "Pro09 Handson"
+author: "Paul Loduca"
+date: "10/24/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+wiscdf <- read.csv("WisconsinCancer.csv")
+wiscdf
+wiscdata <- as.matrix(wiscdf[, 3:32])
+row.names(wiscdata) <-  wiscdf$id
+diagnosis <- wiscdf$diagnosis
+table(diagnosis)
+wiscdata
+wiscpr <- prcomp(wiscdata, scale = TRUE)
+summary(wiscpr)
+wiscpr
+biplot(wiscpr)
+```
+
+```{r}
+plot(wiscpr$x[, "PC1"], wiscpr$x[, "PC2"], col = diagnosis, xlab = "PC1", ylab = "PC2")
+plot(wiscpr$x[, "PC1"], wiscpr$x[, "PC3"], col = diagnosis, xlab = "PC1", ylab = "PC2")
+```
+
+```{r}
+prvar <- wiscpr$sdev^2
+pve <- prvar/sum(prvar)
+plot(pve, xlab= "Principle Component", ylab = "Proportion of Variance", ylim = c(0,1), type = "o")
+```
+
+```{r}
+for (i in pve)  {
+      if (sum(pve[1:i] <= .8)) {
+          i+1
+      } else {
+        print(sum(pve[1:i]))
+      }
+      }
+```
+
+```{r}
+barplot(pve, ylab = "Precent of Variance Explained", names.arg = paste0("PC", 1:length(pve)), las = 2, axes = FALSE)
+        axis(2 ,at=pve, labels = round(pve,2)*100)
+```
+
+```{r}
+#install.packages("factoextra")
+library(factoextra)
+fviz_eig(wiscpr, addlabels = TRUE)
+```
+
+```{r}
+row.names(wiscpr$rotation)
+```
+
+```{r}
+wiscscale <- scale(wiscdata)
+wiscdist <- dist(wiscscale)
+hcwisc <- hclust(wiscdist, method = "complete")
+plot(hcwisc)
+abline(hcwisc, col = "red", lty = 2)
+hcwiscclust <- cutree(hcwisc,k = 4)
+table(hcwiscclust, diagnosis)
+```
+
+```{r}
+wisckm <- kmeans(wiscdata, centers = 2, nstart = 2000)
+wisckm
+table(wisckm$cluster, diagnosis)
+```
+
+```{r}
+table(hcwiscclust, wisckm$cluster)
+```
+
+```{r}
+wiscprscale <- scale(wiscpr$x[, 1:7])
+wiscprdist <- dist(wiscprscale)
+wiscprhc <- hclust(wiscprdist, method = "ward.D2")
+grps <- cutree(wiscprhc, k= 2)
+table(grps, diagnosis)
+plot(wiscpr$x[, 1:2], col=grps)
+plot(wiscpr$x[, 1:2], col = diagnosis)
+g <-  as.factor(grps)
+levels(g)
+g <- relevel(g, 2)
+levels(g)
+plot(wiscpr$x[, 1:2], col =g)
+```
+
+```{r}
+ndata <- read.csv("https://tinyurl.com/new-samples-CSV")
+npc <- predict(wiscpr, newdata = ndata)
+plot(wiscpr$x[, 1:2], col = g)
+points(npc[,1], npc[,2], col = "blue", pch=16, cex=3)
+text(npc[,1], npc[,2], c(1,2),col="white")
+```
