@@ -1,0 +1,62 @@
+---
+title: "Pro06 R Functions"
+author: "Paul Loduca"
+date: "10/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Class 06
+This is my work from class 06 in BIMM143.
+```{r}
+plot(1:10)
+```
+## Practice Reading Files
+```{r}
+test1 <- read.csv("test1.txt")
+test1
+
+test2 <- read.table("test2.txt",
+                    header = TRUE,
+                    sep = "$")
+test2
+test3 <- read.table("test3.txt",
+                     header = FALSE,
+                     sep = "")
+test3
+```
+## Functions
+```{r}
+
+f1 <- function(x, y=1) {
+  x + y
+}
+f1(c(5, 5, 5),5)
+```
+
+##More Function Testing
+```{r}
+rescale <- function(x) {
+  rng <- range(x)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+rescale(1:100)
+rescale(c(1, 2, 3, NA, 10))
+```
+```{r}
+rescale2 <- function(x) {
+  rng <- range(x, na.rm = TRUE)
+  (x - rng[1]) / (rng[2] - rng[1])
+}
+rescale(1:100)
+rescale(c(1, 2, 3, NA, 10))
+?range()
+```
+```{r}
+rescale3 <- function(x) {
+  
+}
+```
+

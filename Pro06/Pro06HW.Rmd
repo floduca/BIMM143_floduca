@@ -1,0 +1,33 @@
+---
+title: "Pro06HW"
+author: "Paul Loduca"
+date: "10/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+#Library calls the required library functions
+library(bio3d)
+#Protein plot takes an input x, where x is a pbd file
+ProteinPlot <- function(x) {
+  #Read pbd outputs a list when given a pdb file
+  tablex <- read.pdb(x)
+  #Trim PDB trims down the large pbd object into a smaller one only containing a subset of the original atoms
+  chainx <- trim.pdb(tablex, chain = "A", elety = "CA")
+  #Calls abd assigns a specific value in the trimmed list
+  xb <- chainx$atom$b
+  #Outputs a graph of bfactor against residue.
+  plotb3(xb, sse = chainx, typ = "l", ylab = "bfactor")
+}
+#Protein vector vectorizes all desired inputs to the Protein Plot function
+ProteinVector = c("4AKE", "1AKE", "1E4Y")
+#For loops through all the inputs in the vector
+for (i in ProteinVector){
+  ProteinPlot(i)
+}
+```
+
