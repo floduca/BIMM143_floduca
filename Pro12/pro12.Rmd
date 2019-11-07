@@ -2,7 +2,7 @@
 title: "Pro12"
 author: "Paul Loduca"
 date: "11/7/2019"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
