@@ -1,0 +1,40 @@
+---
+title: "Pro12"
+author: "Paul Loduca"
+date: "11/7/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##
+
+```{r}
+library(bio3d)
+file <- get.pdb("1hsg")
+hiv <- read.pdb(file)
+```
+
+```{r}
+hiv
+```
+
+```{r}
+prot <- trim.pdb(hiv, "protein")
+lig <- trim.pdb(hiv, "ligand")
+write.pdb(prot, file = "1hsg_protein.pdb")
+write.pdb(lig, file = "1hsg_ligand.pdb")
+```
+
+```{r}
+library(bio3d)
+res <-  read.pdb("all.pdbqt", multi = TRUE)
+write.pdb(res, file = "results.pdb")
+```
+
+```{r}
+ori <- read.pdb("1hsg_ligand.pdbqt")
+rmsd(ori, res)
+```

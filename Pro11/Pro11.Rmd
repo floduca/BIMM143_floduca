@@ -1,0 +1,42 @@
+---
+title: "Pro11"
+author: "Paul Loduca"
+date: "11/5/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+##PDB databsed for biomolecular structure data
+
+```{r}
+PDBdata <- read.csv("Data Export Summary.csv")
+PDBdata
+methodproportions <- PDBdata$Total / sum(PDBdata$Total)
+methodproportions
+proportionprotein <- sum(PDBdata$Proteins)/sum(PDBdata$Total)
+proportionprotein
+```
+##1HSG Structure
+```{r}
+library(bio3d)
+pdb <-  read.pdb("1hsg.pdb")
+whole <- atom.select(pdb)
+whole
+a.inds <- atom.select(pdb, chain = "A")
+a.inds
+ca.inds <-  atom.select(pdb, "calpha", chain = "A")
+ca.inds
+cab.inds <- atom.select(pdb, elety =c("CA", "CB"), chain = "A", resno = 10:20)
+cab.inds
+protein.inds <- atom.select(pdb, string = "protein", value = TRUE)
+write.pdb(protein.inds, file = "1hsg_protein")
+ligand.inds <- atom.select(pdb, string = "ligand", value = TRUE)
+write.pdb(ligand.inds, file = "1hsg_ligand")
+ligand.inds
+
+```
+
+
