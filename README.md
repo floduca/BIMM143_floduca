@@ -13,5 +13,5 @@ This is a repository from work done in [BIMM143](https://bioboot.github.io/bimm1
 - Class 13: [Gene informatics and High Throughput Sequencing](https://github.com/floduca/BIMM143_floduca/blob/master/Pro14/Pro14.md)
 - Class 14: [Transcriptomics and RNAseq](https://github.com/floduca/BIMM143_floduca/blob/master/Pro14/Pro14.md)
 - Class 15: [Genome annotation](https://github.com/floduca/BIMM143_floduca/tree/master/Pro15)
-- Class 17: [Biological Network Analysis]()
+- Class 17: [Biological Network Analysis](https://github.com/floduca/BIMM143_floduca/blob/master/Pro17/pro17.md)
 - Class 18: [Cancer Genomics](https://github.com/floduca/BIMM143_floduca/blob/master/Pro18/Pro18.md)
