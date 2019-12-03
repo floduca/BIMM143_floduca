@@ -1,0 +1,122 @@
+---
+title: "Pro14"
+author: "Paul Loduca"
+date: "11/12/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(BiocManager)
+library(DESeq2)
+```
+
+```{r}
+#Importing the data
+counts <- read.csv("data/airway_scaledcounts.csv", stringsAsFactors = FALSE)
+metadata <-  read.csv("data/airway_metadata.csv", stringsAsFactors = FALSE)
+```
+
+```{r}
+#Looking at the data
+head(counts)
+head(metadata)
+```
+```{r}
+#How many genes & Experiments
+nrow(counts)
+nrow(metadata)
+```
+
+```{r}
+#testing for difference in expression between control and experimental to determine the effect of a drug. This code selects for the control experiments and averages them, then this will be done again for hte expriemntal dataset
+control <- metadata[metadata[,"dex"]=="control",]
+control.mean <- rowSums( counts[ ,control$id] )/length(control$id)
+names(control.mean) <- counts$ensgene
+
+treated <- metadata[metadata[,"dex"]=="treated",]
+treated.mean <- rowSums( counts[ ,treated$id] )/length(treated$id)
+names(treated.mean) <- counts$ensgene
+```
+
+```{r}
+meancounts <-  data.frame(control.mean, treated.mean)
+plot(meancounts$control.mean, meancounts$treated.mean, log="xy")
+
+```
+```{r}
+meancounts$log2fold <- log2(meancounts[,"treated.mean"]/meancounts[,"control.mean"])
+head(meancounts )
+```
+
+```{r}
+control <- c(0, 15, 20)
+treated <- c(0, 18, 0)
+df1 <- data.frame(control, treated)
+df1
+zeros <- which(df1==0, arr.ind = TRUE)
+indexzero <- unique(zeros)
+trimdf <- df1[, -indexzero]
+trimdf
+```
+
+```{r}
+#Trimming zeros out of data
+iszero <- which(meancounts==0, arr.ind=TRUE)
+index <- unique(iszero[,1])
+trimcounts <- meancounts[-index,]
+head(trimcounts)
+```
+
+```{r}
+#Filters for results greater or less than two and assings them to new names
+up.ind <- trimcounts$log2fc > 2
+down.ind <- trimcounts$log2fc < (-2)
+```
+
+```{r}
+library(DESeq2)
+citation("DESeq2")
+dds <- DESeqDataSetFromMatrix(countData=counts, 
+                              colData=metadata, 
+                              design=~dex, 
+                              tidy=TRUE)
+dds
+dds <- DESeq(dds)
+```
+```{r}
+res <- results(dds)
+res
+```
+
+```{r}
+# Set the color palette for our plot
+palette( c("gray","blue") )
+
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=res$sig+1, ylab="-Log(P-value)", xlab="Log2(FoldChange)")
+
+# Add some cut-off lines
+abline(v=c(-2,2), col="darkgray", lty=2)
+abline(h=-log(0.1), col="darkgray", lty=2)
+# Setup our custom point color vector 
+mycols <- rep("gray", nrow(res))
+mycols[ abs(res$log2FoldChange) > 2 ]  <- "red" 
+
+inds <- (res$padj < 0.01) & (abs(res$log2FoldChange) > 2 )
+mycols[ inds ] <- "blue"
+
+#Volcano plot with custom colors 
+plot( res$log2FoldChange,  -log(res$padj), 
+ col=mycols, ylab="-Log(P-valuue)", xlab="Log2(FoldChange)" )
+
+abline(v=c(-2,2), col="gray", lty=2)
+abline(h=-log(0.1), col="green", lty=2)
+```
+
+```{r}
+write.csv(res, file= "results.csv")
+```

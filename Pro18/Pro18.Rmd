@@ -1,0 +1,127 @@
+---
+title: "Pro18"
+author: "Paul Loduca"
+date: "11/26/2019"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(GenomicDataCommons)
+library(TCGAbiolinks)
+library(maftools)
+```
+
+```{r}
+status()
+```
+
+```{r}
+projects <- getGDCprojects()
+head(projects)
+```
+
+```{r}
+cases_by_project <- cases() %>%
+  facet("project.project_id") %>%
+  aggregations()
+head(cases_by_project)
+```
+
+```{r}
+x <- cases_by_project$project.project_id
+
+# Make a custom color vector for our plot
+colvec <- rep("lightblue", nrow(x))
+colvec[x$key == "TCGA-PAAD"] <- "red"
+
+# Plot with 'log' for y axis and rotate labels with 'las'
+#par(___)  
+barplot(x$doc_count, names.arg=x$key, log="y", col=colvec, las=2)
+```
+
+```{r}
+samp <- getSampleFilesSummary("TCGA-PAAD")
+head(samp)
+```
+
+```{r}
+query <- GDCquery(project="TCGA-PAAD",
+                  data.category="Transcriptome Profiling",
+                  data.type="Gene Expression Quantification")
+
+ans <- getResults(query)
+head(ans)
+```
+##Section 2
+
+```{r}
+library(bio3d)
+```
+
+```{r}
+data <- read.fasta("lecture18_sequences.fa")
+```
+```{r}
+## Calculate positional identity scores
+ide <- conserv(data$ali, method="identity")
+mutant.sites <- which(ide < 1) 
+
+## Exclude gap possitions from analysis
+gaps <- gap.inspect(data)
+mutant.sites <- mutant.sites[mutant.sites %in% gaps$f.inds]
+
+mutant.sites
+```
+
+```{r, eval=FALSE}
+#Attempt at own code
+for(i in data) {
+  if (any(i == 
+  print(i-8:i)
+}
+```
+```{r}
+mutant.names <- paste0(data$ali["P53_wt",mutant.sites],
+                       mutant.sites,
+                       data$ali["P53_mutant",mutant.sites])
+
+mutant.names
+```
+```{r}
+## Sequence positions surounding each mutant site
+start.position <- mutant.sites - 8
+end.position <-  mutant.sites + 8
+
+# Blank matrix to store sub-sequences
+store.seqs <- matrix("-", nrow=length(mutant.sites), ncol=17)
+rownames(store.seqs) <- mutant.names
+
+## Extract each sub-sequence
+for(i in 1:length(mutant.sites)) {
+  store.seqs[i,] <- data$ali["P53_mutant",start.position[i]:end.position[i]]
+}
+
+store.seqs
+```
+```{r}
+write.fasta(seqs=store.seqs, ids=mutant.names, file="subsequences.fa")
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
